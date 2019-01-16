@@ -13,14 +13,14 @@ PAYLOAD=$(mktemp /tmp/resource-in.XXXXXX)
 
 cat > "$PAYLOAD" <&0
 
-# do stuff
-UFO_IP="$(jq -r '.source.UFO_IP' < "${PAYLOAD}")"
-UFO_ROW="$(jq -r '.params.UFO_ROW' < "${PAYLOAD}")"
-UFO_COLOR="$(jq -r '.params.UFO_COLOR' < "${PAYLOAD}")"
+MQTT_HOST="$(jq -r '.source.MQTT_HOST' < "${PAYLOAD}")"
+MQTT_PORT="$(jq -r '.source.MQTT_PORT' < "${PAYLOAD}")"
+MQTT_USER="$(jq -r '.source.MQTT_USER' < "${PAYLOAD}")"
+MQTT_PASS="$(jq -r '.source.MQTT_PASS' < "${PAYLOAD}")"
+MQTT_TOPIC="$(jq -r '.source.MQTT_TOPIC' < "${PAYLOAD}")"
+API_CMD="$(jq -r '.params.API_CMD' < "${PAYLOAD}")"
 
-echo "setting UFO at $UFO_IP $UFO_ROW ring to $UFO_COLOR"
-
-curl "http://$UFO_IP/api?$UFO_ROW=0|15|$UFO_COLOR"
+mosquitto_pub -h MQTT_HOST -p $MQTT_PORT -u $MQTT_USER -P $MQTT_PASS -t $MQTT_TOPIC -m "$API_CMD"
 
 timestamp="$(jq -n "{version:{timestamp:\"$(date +%s)\"}}")"
 echo "$timestamp $metadata $debug_info " | jq -s add  >&3

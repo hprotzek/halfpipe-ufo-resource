@@ -1,7 +1,8 @@
-FROM hiromasaono/curl
+FROM debian:9-slim
 
-RUN apt-get update && \
-apt-get install -y jq
+RUN apt-get update && apt-get install -y \
+    jq \
+    mosquitto-clients
 
 COPY check /opt/resource/check
 COPY in    /opt/resource/in
